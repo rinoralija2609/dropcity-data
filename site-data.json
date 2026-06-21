@@ -1,1 +1,245 @@
-{}
+{
+  "updated": "2026-06-21T17:21:17.229Z",
+  "news": [
+    {
+      "kind": "news",
+      "source": "newswire",
+      "score": null,
+      "flair": "official",
+      "created": "2026-06-21T17:21:15.710Z"
+    }
+  ],
+  "money": [
+    {
+      "name": "Cayo Perico 2: Solo Setup",
+      "diff": "easy",
+      "pay": "$1.4M",
+      "time": "45 min",
+      "players": "1+",
+      "hot": true
+    },
+    {
+      "name": "Vice Beach Bank Heist",
+      "diff": "hard",
+      "pay": "$2.8M",
+      "time": "75 min",
+      "players": "2-4",
+      "hot": true
+    },
+    {
+      "name": "Cargo Warehouse Flip",
+      "diff": "medium",
+      "pay": "$950K/HR",
+      "time": "60 min",
+      "players": "1+",
+      "hot": true
+    },
+    {
+      "name": "Street Race Circuit (Vice)",
+      "diff": "easy",
+      "pay": "$120K/Race",
+      "time": "8 min",
+      "players": "4+",
+      "hot": false
+    },
+    {
+      "name": "Nightclub Goods Sell Cycle",
+      "diff": "easy",
+      "pay": "$840K",
+      "time": "Passive",
+      "players": "1+",
+      "hot": true
+    },
+    {
+      "name": "Drug Lab — Solo Resupply",
+      "diff": "medium",
+      "pay": "$1.1M",
+      "time": "Passive",
+      "players": "1+",
+      "hot": false
+    },
+    {
+      "name": "Leonida Casino Inside Job",
+      "diff": "hard",
+      "pay": "$3.4M",
+      "time": "90 min",
+      "players": "3-4",
+      "hot": true
+    },
+    {
+      "name": "Smuggler Air Freight Run",
+      "diff": "medium",
+      "pay": "$680K",
+      "time": "35 min",
+      "players": "1-2",
+      "hot": false
+    }
+  ],
+  "cars": [
+    {
+      "name": "Vapid Dominator GTX",
+      "cls": "Muscle",
+      "basis": "Ford Mustang GT",
+      "speed": "212 km/h",
+      "zero": "4.1s",
+      "conf": "r"
+    },
+    {
+      "name": "Pegassi Tempesta R",
+      "cls": "Super",
+      "basis": "Lamborghini Huracán",
+      "speed": "341 km/h",
+      "zero": "2.6s",
+      "conf": "r"
+    },
+    {
+      "name": "Declasse Vamos II",
+      "cls": "Muscle",
+      "basis": "Chevy Chevelle",
+      "speed": "198 km/h",
+      "zero": "4.8s",
+      "conf": "c"
+    },
+    {
+      "name": "Übermacht Coastline",
+      "cls": "Sports",
+      "basis": "BMW M4",
+      "speed": "264 km/h",
+      "zero": "3.4s",
+      "conf": "r"
+    },
+    {
+      "name": "Bravado Gauntlet Surge",
+      "cls": "Muscle",
+      "basis": "Dodge Challenger",
+      "speed": "229 km/h",
+      "zero": "3.9s",
+      "conf": "c"
+    },
+    {
+      "name": "Grotti Visione Spyder",
+      "cls": "Super",
+      "basis": "Ferrari SF90",
+      "speed": "352 km/h",
+      "zero": "2.4s",
+      "conf": "r"
+    },
+    {
+      "name": "Canis Everglade 4x4",
+      "cls": "Off-Road",
+      "basis": "Ford Bronco",
+      "speed": "176 km/h",
+      "zero": "6.2s",
+      "conf": "c"
+    },
+    {
+      "name": "Ocelot Lynx GT",
+      "cls": "Sports",
+      "basis": "Jaguar F-Type",
+      "speed": "271 km/h",
+      "zero": "3.6s",
+      "conf": "r"
+    },
+    {
+      "name": "Annis Remus Drift",
+      "cls": "Sports",
+      "basis": "Nissan 240SX",
+      "speed": "243 km/h",
+      "zero": "4.4s",
+      "conf": "c"
+    },
+    {
+      "name": "Dewbauchee Coral GT",
+      "cls": "Super",
+      "basis": "Aston Martin Valhalla",
+      "speed": "338 km/h",
+      "zero": "2.7s",
+      "conf": "r"
+    },
+    {
+      "name": "Vapid Sunstrip Cruiser",
+      "cls": "Convertible",
+      "basis": "Pontiac Firebird",
+      "speed": "205 km/h",
+      "zero": "5.0s",
+      "conf": "c"
+    },
+    {
+      "name": "Maibatsu Penumbra EV",
+      "cls": "Sports",
+      "basis": "Tesla Model S",
+      "speed": "258 km/h",
+      "zero": "2.9s",
+      "conf": "r"
+    }
+  ],
+  "crews": [
+    {
+      "name": "Vice Syndicate",
+      "handle": "@vicesynd",
+      "desc": "Heist-fokussierte Crew mit Fokus auf saubere Bank-Runs ohne Mics.",
+      "plat": [
+        "PS5",
+        "Discord"
+      ],
+      "members": "4.2K",
+      "c": "#ff2d95"
+    },
+    {
+      "name": "Neon Drift Kings",
+      "handle": "@neondrift",
+      "desc": "Tuner- & Drift-Community. Wöchentliche Street-Meets und Roll-Racing.",
+      "plat": [
+        "PC",
+        "Xbox"
+      ],
+      "members": "7.8K",
+      "c": "#00e5ff"
+    },
+    {
+      "name": "Leonida Cartel",
+      "handle": "@leonidacartel",
+      "desc": "Roleplay-Server mit eigenem Economy-System und Story-Events.",
+      "plat": [
+        "PC",
+        "Discord"
+      ],
+      "members": "12.1K",
+      "c": "#ffb627"
+    },
+    {
+      "name": "Solo Grinders Unite",
+      "handle": "@sologrind",
+      "desc": "Tipps & Routinen für effizientes Geldmachen komplett solo.",
+      "plat": [
+        "PS5",
+        "PC",
+        "Xbox"
+      ],
+      "members": "22.4K",
+      "c": "#7b2ff7"
+    },
+    {
+      "name": "Coastline Cruisers",
+      "handle": "@coastcruise",
+      "desc": "Chill-Crew für Foto-Touren, Lowriders und Beach-Cruises.",
+      "plat": [
+        "PS5",
+        "Xbox"
+      ],
+      "members": "3.1K",
+      "c": "#ff2d95"
+    },
+    {
+      "name": "Bank Job Collective",
+      "handle": "@bankjob",
+      "desc": "4-Mann-Stack für Hard-Heists. Bewerbung über Discord-Voice-Test.",
+      "plat": [
+        "PC",
+        "Discord"
+      ],
+      "members": "5.6K",
+      "c": "#00e5ff"
+    }
+  ]
+}
