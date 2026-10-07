@@ -1,0 +1,11 @@
+anthropic>=1.0
+python-dotenv
+requests
+# optional: PDFs und Tabellen
+pypdf
+pandas
+openpyxl
+# optional: Sprachsteuerung (python jarvis.py --voice)
+# SpeechRecognition
+# pyttsx3
+# pyaudio
