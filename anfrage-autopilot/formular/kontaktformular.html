@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Anfrage senden</title>
+<!--
+  ANFRAGE-AUTOPILOT · Kontaktformular
+  1) WEBHOOK_URL unten ersetzen (n8n → Node "Formular-Eingang" → "Production URL")
+  2) FIRMENNAME und LEISTUNGEN anpassen
+  3) Datei hochladen (Website des Kunden) ODER kostenlos hosten (z. B. Netlify Drop / GitHub Pages)
+     und den Link im Google-Unternehmensprofil + auf der Website eintragen.
+-->
+<style>
+  :root { --gruen:#1d6f42; --text:#1c1c1c; --grau:#6b6b6b; --rand:#d6d6d6; --bg:#f6f7f5; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif; color:var(--text); background:var(--bg); }
+  .karte { max-width:560px; margin:24px auto; background:#fff; padding:24px 16px; border-radius:12px; box-shadow:0 1px 4px rgba(0,0,0,.08); }
+  h1 { font-size:22px; margin:0 0 4px; }
+  p.sub { color:var(--grau); margin:0 0 20px; }
+  label { display:block; font-weight:600; margin:14px 0 6px; font-size:14px; }
+  input, select, textarea { width:100%; padding:12px; border:1px solid var(--rand); border-radius:8px; font:inherit; font-size:16px; }
+  textarea { min-height:120px; resize:vertical; }
+  .zwei { display:grid; grid-template-columns:1fr 2fr; gap:10px; }
+  .hp { position:absolute; left:-9999px; }
+  button { margin-top:20px; width:100%; padding:14px; border:0; border-radius:8px; background:var(--gruen); color:#fff; font-size:17px; font-weight:700; cursor:pointer; }
+  button:disabled { opacity:.6; }
+  .hinweis { font-size:12px; color:var(--grau); margin-top:12px; }
+  .ok { display:none; text-align:center; padding:30px 0; }
+  .ok h2 { color:var(--gruen); }
+</style>
+</head>
+<body>
+<div class="karte">
+  <form id="f">
+    <h1>Anfrage an <span id="firma">Mustermann Haustechnik</span></h1>
+    <p class="sub">Sie bekommen in wenigen Minuten eine Antwort per E-Mail.</p>
+
+    <label for="leistung">Worum geht es?</label>
+    <select id="leistung" name="leistung" required></select>
+
+    <label for="nachricht">Beschreibung</label>
+    <textarea id="nachricht" name="nachricht" required placeholder="z. B. Bad ca. 8 m², Wanne raus, bodengleiche Dusche rein …"></textarea>
+
+    <label for="name">Name</label>
+    <input id="name" name="name" required autocomplete="name">
+
+    <label for="email">E-Mail</label>
+    <input id="email" name="email" type="email" required autocomplete="email">
+
+    <label for="telefon">Telefon (für Rückfragen)</label>
+    <input id="telefon" name="telefon" type="tel" autocomplete="tel">
+
+    <div class="zwei">
+      <div><label for="plz">PLZ</label><input id="plz" name="plz" inputmode="numeric" maxlength="5" required></div>
+      <div><label for="ort">Ort</label><input id="ort" name="ort" required></div>
+    </div>
+
+    <label for="zeitraum">Wunschzeitraum (optional)</label>
+    <input id="zeitraum" name="zeitraum" placeholder="z. B. Frühjahr 2027">
+
+    <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+    <label style="font-weight:400;font-size:13px"><input type="checkbox" required style="width:auto"> Ich bin einverstanden, dass meine Angaben zur Bearbeitung der Anfrage verarbeitet werden (<a id="ds" href="#" target="_blank">Datenschutz</a>).</label>
+
+    <button id="senden" type="submit">Anfrage senden</button>
+    <p class="hinweis">Fotos können Sie einfach als Antwort auf unsere Bestätigungs-Mail schicken.</p>
+  </form>
+  <div class="ok" id="ok">
+    <h2>Danke! ✔</h2>
+    <p>Ihre Anfrage ist angekommen. Sie erhalten in Kürze eine E-Mail von uns.</p>
+  </div>
+</div>
+<script>
+  // ======= ANPASSEN =======
+  const WEBHOOK_URL = 'https://DEIN-N8N.app.n8n.cloud/webhook/anfrage-autopilot';
+  const FIRMENNAME = 'Mustermann Haustechnik';
+  const LEISTUNGEN = ['Badsanierung', 'Heizungstausch', 'Wärmepumpe', 'Rohrbruch / Notdienst', 'Wartung', 'Sonstiges'];
+  const DATENSCHUTZ_URL = 'https://www.mustermann-haustechnik.de/datenschutz';
+  // ========================
+  document.getElementById('firma').textContent = FIRMENNAME;
+  document.getElementById('ds').href = DATENSCHUTZ_URL;
+  const sel = document.getElementById('leistung');
+  LEISTUNGEN.forEach(l => sel.add(new Option(l, l)));
+
+  document.getElementById('f').addEventListener('submit', async e => {
+    e.preventDefault();
+    const btn = document.getElementById('senden');
+    btn.disabled = true; btn.textContent = 'Wird gesendet …';
+    const daten = Object.fromEntries(new FormData(e.target).entries());
+    try {
+      const r = await fetch(WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(daten) });
+      if (!r.ok) throw new Error(r.status);
+      e.target.style.display = 'none';
+      document.getElementById('ok').style.display = 'block';
+    } catch (err) {
+      btn.disabled = false; btn.textContent = 'Anfrage senden';
+      alert('Das hat leider nicht geklappt. Bitte rufen Sie uns kurz an.');
+    }
+  });
+</script>
+</body>
+</html>
