@@ -40,13 +40,20 @@ if platform.system() == "Windows":
     os.system("")  # ANSI-Farben in der Windows-Konsole aktivieren
 
 
+ui = None  # wird von jarvis_ui.py gesetzt, wenn die Browser-Oberfläche läuft
+
+
 def say(text, color="j"):
     print(f"{C[color]}{text}{C['x']}")
+    if ui:
+        ui.emit("log", text=text.strip(), kind=color)
 
 
 def confirm(action: str) -> bool:
     if AUTO_APPROVE:
         return True
+    if ui:
+        return ui.confirm(action)
     say(f"⚠  Jarvis möchte: {action}", "w")
     return input("   Erlauben? [j/N] ").strip().lower() in ("j", "ja", "y", "yes")
 

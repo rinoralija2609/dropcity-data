@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>J.A.R.V.I.S.</title>
+<style>
+  :root { --c: 79, 209, 255; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: #02060d; color: #cfe9ff;
+    font-family: "Segoe UI", system-ui, sans-serif; overflow: hidden; }
+  canvas { position: fixed; inset: 0; width: 100%; height: 100%; cursor: pointer; }
+  header { position: fixed; top: 18px; left: 0; right: 0; text-align: center; pointer-events: none; }
+  header h1 { margin: 0; font-weight: 300; letter-spacing: .6em; font-size: 20px;
+    color: rgb(var(--c)); text-shadow: 0 0 18px rgba(var(--c), .7); transition: color .4s; }
+  header small { opacity: .5; letter-spacing: .2em; font-size: 11px; }
+  #state { position: fixed; left: 0; right: 0; top: 88px; text-align: center;
+    letter-spacing: .35em; font-size: 12px; text-transform: uppercase; color: rgba(var(--c), .9);
+    pointer-events: none; transition: color .4s; }
+  #log { position: fixed; left: 50%; transform: translateX(-50%); bottom: 92px; width: min(760px, 92vw);
+    max-height: 26vh; overflow-y: auto; font-size: 15px; line-height: 1.45;
+    mask-image: linear-gradient(transparent, #000 30%); padding-top: 30px; }
+  #log div { margin: 6px 0; white-space: pre-wrap; }
+  #log .u { color: #8fa3b8; } #log .u::before { content: "Du: "; opacity: .6; }
+  #log .j { color: #dff4ff; } #log .t { color: #ffd166; font-family: Consolas, monospace; font-size: 13px; }
+  #log .g { color: #6b8099; font-size: 13px; } #log .w { color: #ff7b7b; }
+  #bar { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%); width: min(760px, 92vw);
+    display: flex; gap: 8px; align-items: center; }
+  #bar input[type=text] { flex: 1; background: rgba(10, 25, 45, .8); border: 1px solid rgba(var(--c), .35);
+    color: #e6f6ff; border-radius: 24px; padding: 12px 18px; font-size: 15px; outline: none; }
+  #bar input[type=text]:focus { border-color: rgba(var(--c), .9); box-shadow: 0 0 14px rgba(var(--c), .35); }
+  button { background: rgba(var(--c), .12); border: 1px solid rgba(var(--c), .5); color: rgb(var(--c));
+    border-radius: 24px; padding: 11px 16px; font-size: 14px; cursor: pointer; }
+  button:hover { background: rgba(var(--c), .25); }
+  #mic.on { background: rgba(var(--c), .45); color: #001018; }
+  label { font-size: 12px; opacity: .75; display: flex; align-items: center; gap: 4px; white-space: nowrap; }
+  #modal { position: fixed; inset: 0; background: rgba(0, 0, 0, .6); display: none; align-items: center;
+    justify-content: center; z-index: 5; }
+  #modal .box { background: #0b1422; border: 1px solid #ff7b7b; border-radius: 14px; padding: 22px;
+    width: min(560px, 90vw); box-shadow: 0 0 40px rgba(255, 90, 90, .25); }
+  #modal h2 { margin: 0 0 10px; font-size: 17px; color: #ff9b9b; font-weight: 500; }
+  #modal pre { white-space: pre-wrap; word-break: break-all; background: #050b14; padding: 10px;
+    border-radius: 8px; color: #ffd166; max-height: 40vh; overflow: auto; }
+  #modal .row { display: flex; gap: 10px; justify-content: flex-end; margin-top: 14px; }
+  #yes { border-color: #5be49b; color: #5be49b; background: rgba(91, 228, 155, .12); }
+  #no { border-color: #ff7b7b; color: #ff7b7b; background: rgba(255, 123, 123, .12); }
+  #hint { position: fixed; top: 62px; left: 0; right: 0; text-align: center; font-size: 12px; opacity: .45;
+    pointer-events: none; }
+</style>
+</head>
+<body>
+<canvas id="orb"></canvas>
+<header><h1>J.A.R.V.I.S.</h1><small>__MODEL__</small></header>
+<div id="hint">Kugel anklicken oder Leertaste: sprechen · Esc: Stimme stoppen</div>
+<div id="state">Bereit</div>
+<div id="log"></div>
+<div id="bar">
+  <button id="mic" title="Sprechen (Leertaste)">🎙</button>
+  <input id="text" type="text" placeholder="Auftrag eingeben oder sprechen …" autocomplete="off">
+  <label title="Nach jeder Antwort automatisch wieder zuhören"><input type="checkbox" id="conv">Gespräch</label>
+  <label title="Antworten vorlesen"><input type="checkbox" id="voiceOn" checked>Stimme</label>
+  <button id="reset" title="Neues Gespräch">↺</button>
+</div>
+<div id="modal"><div class="box">
+  <h2>⚠ Jarvis möchte etwas ausführen</h2><pre id="action"></pre>
+  <div class="row"><button id="no">Ablehnen</button><button id="yes">Erlauben</button></div>
+</div></div>
+
+<script>
+const TOKEN = "__TOKEN__";
+const $ = id => document.getElementById(id);
+const post = (path, body = {}) => fetch(path, { method: "POST", headers: { "X-Token": TOKEN }, body: JSON.stringify(body) });
+
+/* ------------------------------------------------------------ Zustand & Farben */
+const COLORS = { idle: [79, 209, 255], listening: [90, 255, 190], thinking: [255, 184, 77], speaking: [120, 225, 255] };
+const LABELS = { idle: "Bereit", listening: "Ich höre zu …", thinking: "Analysiere …", speaking: "Spreche" };
+let state = "idle", level = 0, target = 0, col = [...COLORS.idle];
+function setState(s) {
+  state = s;
+  $("state").textContent = LABELS[s];
+  document.documentElement.style.setProperty("--c", COLORS[s].join(","));
+}
+
+/* ------------------------------------------------------------ Kugel-Animation */
+const cv = $("orb"), ctx = cv.getContext("2d");
+let W, H, DPR;
+function resize() { DPR = devicePixelRatio || 1; W = cv.width = innerWidth * DPR; H = cv.height = innerHeight * DPR; }
+addEventListener("resize", resize); resize();
+const particles = Array.from({ length: 140 }, () => ({ a: Math.random() * Math.PI * 2, r: 1.2 + Math.random() * 1.6, s: (Math.random() - .5) * .004, z: Math.random() }));
+
+function frame(t) {
+  t /= 1000;
+  // Pegel: Mikrofon (zuhören), simulierte Sprachhüllkurve (sprechen), ruhiges Pulsieren (denken)
+  if (state === "listening") target = micLevel();
+  else if (state === "speaking") target = Math.max(target * 0.93, 0.25 + 0.15 * Math.sin(t * 9));
+  else if (state === "thinking") target = 0.25 + 0.15 * Math.sin(t * 3);
+  else target = 0.06 + 0.04 * Math.sin(t * 1.2);
+  level += (target - level) * 0.18;
+  col = col.map((c, i) => c + (COLORS[state][i] - c) * 0.06);
+  const [r, g, b] = col.map(Math.round), rgb = a => `rgba(${r},${g},${b},${a})`;
+
+  const cx = W / 2, cy = H * 0.4, R = Math.min(W, H) * 0.15;
+  ctx.fillStyle = "rgba(2,6,13,0.35)"; ctx.fillRect(0, 0, W, H);          // Nachleuchten
+  const spin = state === "thinking" ? 2.4 : 1;
+
+  // äußeres Leuchten
+  let grd = ctx.createRadialGradient(cx, cy, R * 0.2, cx, cy, R * (2.4 + level));
+  grd.addColorStop(0, rgb(0.22 + level * 0.25)); grd.addColorStop(1, rgb(0));
+  ctx.fillStyle = grd; ctx.beginPath(); ctx.arc(cx, cy, R * (2.4 + level), 0, 7); ctx.fill();
+
+  // Kern
+  const core = R * (0.42 + level * 0.22);
+  grd = ctx.createRadialGradient(cx, cy, 0, cx, cy, core);
+  grd.addColorStop(0, "rgba(255,255,255,0.95)"); grd.addColorStop(0.35, rgb(0.9)); grd.addColorStop(1, rgb(0));
+  ctx.fillStyle = grd; ctx.beginPath(); ctx.arc(cx, cy, core, 0, 7); ctx.fill();
+
+  // kreisförmige "Wellenform" (reagiert auf Pegel)
+  ctx.lineWidth = 2 * DPR;
+  for (let k = 0; k < 3; k++) {
+    ctx.beginPath();
+    for (let i = 0; i <= 180; i++) {
+      const a = (i / 180) * Math.PI * 2;
+      const n = Math.sin(a * (5 + k * 2) + t * (2 + k) * spin) * Math.sin(a * 3 - t * 1.7 * spin);
+      const rr = R * (0.78 + k * 0.06) + n * R * (0.04 + level * 0.32);
+      const x = cx + Math.cos(a) * rr, y = cy + Math.sin(a) * rr;
+      i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+    }
+    ctx.strokeStyle = rgb(0.75 - k * 0.2); ctx.shadowColor = rgb(1); ctx.shadowBlur = 16 * DPR;
+    ctx.stroke();
+  }
+  ctx.shadowBlur = 0;
+
+  // segmentierte Ringe (Arc-Reactor-Look)
+  const rings = [[1.25, 0.6, 24, 3], [1.45, -0.35, 60, 1.5], [1.7, 0.2, 8, 2.5]];
+  rings.forEach(([f, speed, segs, w], idx) => {
+    ctx.lineWidth = w * DPR; ctx.strokeStyle = rgb(0.55 - idx * 0.12);
+    const rr = R * f * (1 + level * 0.08), rot = t * speed * spin;
+    for (let i = 0; i < segs; i++) {
+      const a0 = rot + (i / segs) * Math.PI * 2, len = (Math.PI * 2 / segs) * (idx === 2 ? 0.55 : 0.7);
+      ctx.beginPath(); ctx.arc(cx, cy, rr, a0, a0 + len); ctx.stroke();
+    }
+  });
+
+  // Teilchen
+  particles.forEach(p => {
+    p.a += p.s * spin * (1 + level * 3);
+    const rr = R * (1.9 + p.z * 0.9 + level * 0.4);
+    ctx.fillStyle = rgb(0.25 + p.z * 0.5);
+    ctx.beginPath(); ctx.arc(cx + Math.cos(p.a) * rr, cy + Math.sin(p.a) * rr, p.r * DPR, 0, 7); ctx.fill();
+  });
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+/* ------------------------------------------------------------ Mikrofon-Pegel */
+let analyser, micStream, buf;
+async function startMicLevel() {
+  try {
+    micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const ac = new AudioContext(), src = ac.createMediaStreamSource(micStream);
+    analyser = ac.createAnalyser(); analyser.fftSize = 512; buf = new Uint8Array(analyser.fftSize);
+    src.connect(analyser);
+  } catch { analyser = null; }
+}
+function stopMicLevel() { micStream?.getTracks().forEach(t => t.stop()); micStream = null; analyser = null; }
+function micLevel() {
+  if (!analyser) return 0.3;
+  analyser.getByteTimeDomainData(buf);
+  let sum = 0; for (const v of buf) sum += ((v - 128) / 128) ** 2;
+  return Math.min(1, Math.sqrt(sum / buf.length) * 6);
+}
+
+/* ------------------------------------------------------------ Spracherkennung */
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let rec, listening = false;
+function listen() {
+  if (!SR) { addLog("Spracherkennung wird hier nicht unterstützt – bitte Edge oder Chrome nutzen.", "w"); return; }
+  if (listening) { rec.stop(); return; }
+  if (state === "thinking") return;
+  speechSynthesis.cancel();
+  rec = new SR(); rec.lang = "de-DE"; rec.interimResults = true;
+  let finalText = "";
+  rec.onresult = e => {
+    let interim = "";
+    for (const r of e.results) r.isFinal ? (finalText = r[0].transcript) : (interim += r[0].transcript);
+    $("text").value = finalText || interim;
+  };
+  rec.onend = () => {
+    listening = false; $("mic").classList.remove("on"); stopMicLevel();
+    if (state === "listening") setState("idle");
+    if (finalText.trim()) send(finalText);
+  };
+  rec.onerror = e => { if (e.error !== "no-speech" && e.error !== "aborted") addLog("Mikrofon: " + e.error, "w"); };
+  listening = true; $("mic").classList.add("on"); setState("listening"); startMicLevel(); rec.start();
+}
+
+/* ------------------------------------------------------------ Stimme */
+let voice;
+function pickVoice() {
+  const vs = speechSynthesis.getVoices().filter(v => v.lang.startsWith("de"));
+  // bevorzugt die natürlichen Microsoft-Stimmen (Edge), männlich wie Jarvis
+  voice = ["Conrad", "Killian", "Florian", "Natural", "Online", "Google", "Stefan"]
+    .map(n => vs.find(v => v.name.includes(n))).find(Boolean) || vs[0];
+}
+speechSynthesis.onvoiceschanged = pickVoice; pickVoice();
+
+function speak(text) {
+  const clean = text.replace(/```[\s\S]*?```/g, " Code siehe Bildschirm. ").replace(/[`*#_>|]/g, "").replace(/https?:\/\/\S+/g, "Link");
+  const parts = clean.match(/[^.!?\n]+[.!?]*/g)?.map(s => s.trim()).filter(Boolean) || [];
+  if (!$("voiceOn").checked || !parts.length) return afterSpeaking();
+  speechSynthesis.cancel(); setState("speaking");
+  parts.forEach((p, i) => {   // satzweise, weil lange Texte in Chrome sonst abbrechen
+    const u = new SpeechSynthesisUtterance(p);
+    if (voice) u.voice = voice; u.lang = "de-DE"; u.rate = 1.03; u.pitch = 0.9;
+    u.onboundary = () => { target = 0.7 + Math.random() * 0.3; };   // Kugel pulsiert pro Wort
+    if (i === parts.length - 1) u.onend = u.onerror = afterSpeaking;
+    speechSynthesis.speak(u);
+  });
+}
+function afterSpeaking() {
+  if (state === "speaking" || state === "thinking") setState("idle");
+  if ($("conv").checked && state === "idle") setTimeout(listen, 400);
+}
+
+/* ------------------------------------------------------------ Verlauf & Server */
+function addLog(text, kind) {
+  const d = document.createElement("div"); d.className = kind; d.textContent = text;
+  $("log").appendChild(d); $("log").scrollTop = 1e9;
+}
+function send(text) {
+  text = text.trim(); if (!text) return;
+  $("text").value = ""; addLog(text, "u"); setState("thinking");
+  post("/ask", { text });
+}
+
+const es = new EventSource("/events?t=" + TOKEN);
+es.addEventListener("log", e => {
+  const { text, kind } = JSON.parse(e.data);
+  if (text.startsWith("⚠")) return;
+  addLog(text.replace(/^JARVIS:\s*/, ""), kind);
+});
+es.addEventListener("status", e => {
+  const s = JSON.parse(e.data).state;
+  if (s === "thinking") setState("thinking");
+  else if (state === "thinking") setState("idle");
+});
+es.addEventListener("answer", e => speak(JSON.parse(e.data).text || ""));
+es.addEventListener("fail", e => {
+  const msg = JSON.parse(e.data).message; addLog(msg, "w"); setState("idle"); speak(msg);
+});
+es.addEventListener("confirm", e => {
+  const { id, action } = JSON.parse(e.data);
+  $("action").textContent = action; $("modal").style.display = "flex";
+  if ($("voiceOn").checked) { const u = new SpeechSynthesisUtterance("Darf ich das ausführen?"); if (voice) u.voice = voice; speechSynthesis.speak(u); }
+  const done = ok => { $("modal").style.display = "none"; post("/confirm", { id, ok }); };
+  $("yes").onclick = () => done(true); $("no").onclick = () => done(false);
+});
+es.onerror = () => { $("state").textContent = "Verbindung zu Jarvis getrennt"; };
+
+/* ------------------------------------------------------------ Bedienung */
+$("mic").onclick = listen;
+cv.onclick = listen;
+$("text").addEventListener("keydown", e => { if (e.key === "Enter") send($("text").value); });
+$("reset").onclick = async () => {
+  const r = await post("/reset");
+  if (r.ok) { $("log").innerHTML = ""; addLog("Neues Gespräch gestartet.", "g"); }
+};
+addEventListener("keydown", e => {
+  if (e.key === "Escape") { speechSynthesis.cancel(); if (state === "speaking") setState("idle"); }
+  if (e.code === "Space" && document.activeElement !== $("text") && $("modal").style.display !== "flex") { e.preventDefault(); listen(); }
+});
+addLog("Guten Tag. Wie kann ich Ihnen behilflich sein?", "j");
+</script>
+</body>
+</html>

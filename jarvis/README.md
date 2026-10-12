@@ -13,6 +13,18 @@ python jarvis.py          # Textmodus
 python jarvis.py --voice  # Sprachmodus (SpeechRecognition, pyttsx3, pyaudio installieren)
 ```
 
+## Mit Stimme und animierter Oberfläche
+
+```bash
+py jarvis_ui.py
+```
+
+Öffnet Jarvis im Browser (am besten **Microsoft Edge** – dort gibt es die natürlichen deutschen Stimmen,
+z. B. „Conrad“). Kugel anklicken oder Leertaste drücken und sprechen; Jarvis antwortet mit Stimme,
+die Kugel reagiert auf Zuhören (grün), Nachdenken (orange) und Sprechen (blau).
+„Gespräch“ anhaken = nach jeder Antwort automatisch weiter zuhören. Bestätigungen erscheinen als Fenster.
+Die Oberfläche ist nur auf diesem PC erreichbar (127.0.0.1).
+
 Befehle im Chat: `exit` beendet, `reset` startet ein neues Gespräch, Strg+C bricht den laufenden Auftrag ab.
 
 ## Sicherheit
