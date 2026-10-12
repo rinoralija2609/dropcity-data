@@ -27,6 +27,15 @@ Die Oberfläche ist nur auf diesem PC erreichbar (127.0.0.1).
 
 Befehle im Chat: `exit` beendet, `reset` startet ein neues Gespräch, Strg+C bricht den laufenden Auftrag ab.
 
+## Obsidian & Gedächtnis
+
+In der `.env` den Pfad zu deinem Obsidian-Tresor eintragen:
+`JARVIS_OBSIDIAN_VAULT=C:\Users\DeinName\Documents\Obsidian Vault`
+
+Dann kann Jarvis Notizen durchsuchen, lesen, anlegen (mit [[Links]] und #tags) und Einträge in die
+Tagesnotiz `Daily/JJJJ-MM-TT` schreiben. Was er sich über dich merkt („merk dir …“), landet in
+`Jarvis/Gedächtnis.md` – ohne Obsidian im Workspace. Die Datei kannst du jederzeit selbst bearbeiten.
+
 ## Sicherheit
 
 - Shell-Befehle, das Öffnen von Programmen, das Überschreiben von Dateien und Schreiben
