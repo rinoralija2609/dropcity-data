@@ -36,6 +36,14 @@ Dann kann Jarvis Notizen durchsuchen, lesen, anlegen (mit [[Links]] und #tags) u
 Tagesnotiz `Daily/JJJJ-MM-TT` schreiben. Was er sich über dich merkt („merk dir …“), landet in
 `Jarvis/Gedächtnis.md` – ohne Obsidian im Workspace. Die Datei kannst du jederzeit selbst bearbeiten.
 
+## Outlook (E-Mail & Kalender)
+
+Einmalig eine kostenlose App-Registrierung bei Microsoft anlegen (Anleitung im Chat), die
+Anwendungs-ID in die `.env` als `JARVIS_MS_CLIENT_ID=...` eintragen und `py -m pip install msal` ausführen.
+Beim ersten Mail-Auftrag öffnet sich microsoft.com/devicelogin – dort den angezeigten Code eingeben.
+Jarvis kann dann Mails auflisten/lesen/suchen, Entwürfe schreiben, Termine anzeigen und eintragen.
+**Gesendet wird nur nach deiner Bestätigung** – auch wenn `JARVIS_AUTO_APPROVE=true` ist.
+
 ## Sicherheit
 
 - Shell-Befehle, das Öffnen von Programmen, das Überschreiben von Dateien und Schreiben

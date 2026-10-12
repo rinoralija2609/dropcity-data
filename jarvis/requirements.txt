@@ -1,6 +1,7 @@
 anthropic>=1.0
 python-dotenv
 requests
+msal          # Outlook (E-Mail + Kalender)
 # optional: PDFs und Tabellen
 pypdf
 pandas
