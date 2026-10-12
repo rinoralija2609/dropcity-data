@@ -6,7 +6,8 @@
 <title>Anfrage senden</title>
 <!--
   ANFRAGE-AUTOPILOT · Kontaktformular
-  1) WEBHOOK_URL unten ersetzen (n8n → Node "Formular-Eingang" → "Production URL")
+  1) WEBHOOK_URL unten ersetzen (n8n → Node "Formular-Eingang" → "Production URL"
+     ODER Gratis-Version: Web-App-URL aus Google Apps Script, siehe gratis-google/ANLEITUNG.md)
   2) FIRMENNAME und LEISTUNGEN anpassen
   3) Datei hochladen (Website des Kunden) ODER kostenlos hosten (z. B. Netlify Drop / GitHub Pages)
      und den Link im Google-Unternehmensprofil + auf der Website eintragen.
@@ -89,8 +90,13 @@
     btn.disabled = true; btn.textContent = 'Wird gesendet …';
     const daten = Object.fromEntries(new FormData(e.target).entries());
     try {
-      const r = await fetch(WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(daten) });
-      if (!r.ok) throw new Error(r.status);
+      if (WEBHOOK_URL.includes('script.google.com')) {
+        // Gratis-Version (Google Apps Script): einfacher Request ohne CORS-Vorabprüfung
+        await fetch(WEBHOOK_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(daten) });
+      } else {
+        const r = await fetch(WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(daten) });
+        if (!r.ok) throw new Error(r.status);
+      }
       e.target.style.display = 'none';
       document.getElementById('ok').style.display = 'block';
     } catch (err) {

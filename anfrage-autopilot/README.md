@@ -19,6 +19,12 @@ Chef bekommt: Telegram aufs Handy + E-Mail mit „Mit einem Klick senden“-Butt
 
 ---
 
+## 💡 Zwei Versionen: wähle eine
+| Version | Kosten | Für wen |
+|---|---|---|
+| **Gratis-Version (Google)** → [`gratis-google/ANLEITUNG.md`](gratis-google/ANLEITUNG.md) | **0 €** (nur KI-Guthaben ab 5 $) | **Zum Start empfohlen:** läuft in einem Gmail-Konto, prüft alle 5 Min. |
+| n8n-Version → [`01-EINRICHTUNG.md`](01-EINRICHTUNG.md) | ca. 24 €/Monat | später, wenn die Kunden die Kosten decken; antwortet sofort |
+
 ## ✅ Was nur du machen kannst (insgesamt ca. 3 Stunden + Gespräche)
 Das kann ich nicht übernehmen, weil es deine Konten, deine Unterschrift und deine Stimme braucht:
 
@@ -39,6 +45,7 @@ Das kann ich nicht übernehmen, weil es deine Konten, deine Unterschrift und dei
 |---|---|
 | [`01-EINRICHTUNG.md`](01-EINRICHTUNG.md) | Klick-für-Klick-Anleitung inkl. IMAP/SMTP-Daten aller gängigen Mail-Anbieter |
 | [`n8n/anfrage-autopilot.json`](n8n/anfrage-autopilot.json) | **Der fertige Workflow:** in n8n importieren, Zugangsdaten eintragen, fertig |
+| [`gratis-google/`](gratis-google/) | **Gratis-Version** für Google Apps Script (`Code.gs`) + Anleitung |
 | `n8n/src/`, `build.js`, `test.js` | Quellcode der Workflow-Schritte und automatische Tests |
 | [`formular/kontaktformular.html`](formular/kontaktformular.html) | Fertiges Anfrageformular für Website und Google-Profil (handytauglich, mit Spam-Schutz) |
 | [`demo/demo-anfragen.md`](demo/demo-anfragen.md) | 7 Test-Anfragen (unvollständig, Notfall, Albanisch, Spam …) |
@@ -60,5 +67,5 @@ Das kann ich nicht übernehmen, weil es deine Konten, deine Unterschrift und dei
 | Plus (inkl. Formular, Nachfassen, Bewertungen) | 650 € | 69 € |
 
 ## 💸 Deine Kosten
-- **Start:** 0 € (n8n-Testphase) + 5–10 $ API-Guthaben + ca. 20–50 € Gewerbeanmeldung + ca. 10 € Flyerdruck
-- **Laufend:** n8n ca. 20–25 €/Monat (oder eigener Server ca. 5 €) + KI ca. 3–4 Cent pro Anfrage
+- **Start:** 0 € mit der Gratis-Version (oder n8n-Testphase) + 5–10 $ API-Guthaben + ca. 20–50 € Gewerbeanmeldung + ca. 10 € Flyerdruck
+- **Laufend:** Gratis-Version 0 € · n8n ca. 20–25 €/Monat (oder eigener Server ca. 5 €) + KI ca. 3–4 Cent pro Anfrage
